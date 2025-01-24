@@ -16,11 +16,11 @@ Nome: "cliente-sevice"
 Funcionalidades:
 
 - Redirecionamento para urls dos serviços principais:
-  "localhost:8080/clientes"
+  - "localhost:8080/clientes"
 
 - Url para cálculo de score de um cliente através do ID do mesmo:
-  (inserir número ID após "score/")
-  "localhost:8080/score/{id}"
+  - (inserir número ID após "score/")
+  - "localhost:8080/score/{id}"
   
 
 APLICAÇÃO 2 - Serviços relacionados ao cliente
@@ -30,15 +30,15 @@ Nome: "data-service"
 Funcionalidades:
 
 - Criar cliente
-  "localhost:8081/clientes" - POST
+  - "localhost:8081/clientes" - POST
 - Atualizar cliente através do ID
-  "localhost:8081/clientes/{id}" - PUT
+  - "localhost:8081/clientes/{id}" - PUT
 - Excluir cliente da base de dados através do ID
-  "localhost:8081/clientes/{id}" - DELETE
+  - "localhost:8081/clientes/{id}" - DELETE
 - Listar informações de todos os clientes
-  "localhost:8081/clientes" - GET
+  - "localhost:8081/clientes" - GET
 - Listar informações de apenas um cliente através do ID
-  "localhost:8081/clientes/{id}" - GET
+  - "localhost:8081/clientes/{id}" - GET
 
 
 
