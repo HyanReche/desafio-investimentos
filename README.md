@@ -11,7 +11,7 @@ INSTRUÇÕES:
 
 APLICAÇÃO 1 - Serviço de redirecionamento e cálculo de score
 
-Nome: "cliente-sevice"
+Nome: "cliente-service"
 
 Funcionalidades:
 
