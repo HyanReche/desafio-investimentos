@@ -8,6 +8,7 @@ INSTRUÇÕES:
 
 -FAZER AS REQUISIÇÕES DE USUÁRIO DA APLICAÇÃO 2
 
+
 APLICAÇÃO 1 - Serviço de redirecionamento e cálculo de score
 
 Nome: "cliente-sevice"
@@ -20,6 +21,7 @@ Funcionalidades:
 - Url para cálculo de score de um cliente através do ID do mesmo:
   (inserir número ID após "score/")
   "localhost:8080/score/{id}"
+  
 
 APLICAÇÃO 2 - Serviços relacionados ao cliente
 
