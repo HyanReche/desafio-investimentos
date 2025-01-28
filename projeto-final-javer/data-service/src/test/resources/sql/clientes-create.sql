@@ -3,6 +3,6 @@ CREATE TABLE IF NOT EXISTS data (
     nome VARCHAR(80) NOT NULL,
     telefone VARCHAR(11) NOT NULL,
     correntista BOOLEAN NOT NULL,
-    score_credito DOUBLE NOT NULL,
-    saldo_cc DOUBLE NOT NULL
+    score_credito FLOAT NOT NULL,
+    saldo_cc FLOAT NOT NULL
 );

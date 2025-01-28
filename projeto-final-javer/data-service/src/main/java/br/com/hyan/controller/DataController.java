@@ -15,7 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import br.com.hyan.dto.DataDto;
+import br.com.hyan.exception.CorrentistaNaoPodeSerEnviadoException;
+import br.com.hyan.exception.ScoreCreditoNaoPodeSerEnviadoException;
 import br.com.hyan.exception.UsuarioNaoEncontradoException;
 import br.com.hyan.model.Data;
 import br.com.hyan.repository.DataRepository;
@@ -24,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @Tag(name = "Banco Javer", description = "Realização de Operações ligadas ao cliente")
@@ -46,17 +51,38 @@ public class DataController {
                                     schema = @Schema(implementation = DataDto.class)))
             })
 	
-	@PostMapping
-	public ResponseEntity<Data> createCliente(@RequestBody @Valid Data data) {
+    @PostMapping
+    public ResponseEntity<?> createCliente(@RequestBody @Valid DataDto dataDto, HttpServletRequest request) throws JsonProcessingException {
 
-	    Data savedData = repository.save(data);
-	    URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-	            .path("/{id}")
-	            .buildAndExpand(savedData.getId())
-	            .toUri();
-	    
-	    return ResponseEntity.created(location).body(savedData);
-	}
+        if (dataDto.getCorrentista() != null) {
+        	throw new CorrentistaNaoPodeSerEnviadoException();
+        }
+        
+        if (dataDto.getScore_credito() != null) {
+        	throw new ScoreCreditoNaoPodeSerEnviadoException();
+        }
+
+        Data data = new Data();
+        data.setNome(dataDto.getNome());
+        data.setTelefone(dataDto.getTelefone());
+        
+        if (dataDto.getSaldo_cc() != null && dataDto.getSaldo_cc() > 0.0) {
+            data.setSaldo_cc(dataDto.getSaldo_cc());
+            data.setCorrentista(true);
+        } else {
+            data.setSaldo_cc(0.0f); 
+            data.setCorrentista(false);
+        }
+        
+        Data savedData = repository.save(data);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedData.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(savedData);
+    }
 	
 	
     @Operation(summary = "Recuperar cliente pelo ID", description = "Recuperar um cliente através do ID fornecido",
@@ -64,10 +90,10 @@ public class DataController {
                     @ApiResponse(responseCode = "200", description = "Cliente recuperado com sucesso!",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = DataDto.class))),
-                    @ApiResponse(responseCode = "404", description = "CLiente não encontrado.",
+                    @ApiResponse(responseCode = "404", description = "Cliente não encontrado.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = DataDto.class)))
-            })
+                    })
     
 	@GetMapping("/{id}")
 	public Data getClienteById(@PathVariable Long id) {
@@ -104,16 +130,43 @@ public class DataController {
             })
     
     @PutMapping("/{id}")
-    public ResponseEntity<Data> updateCliente(@PathVariable Long id, @RequestBody @Valid Data data) {
+    public ResponseEntity<Data> updateCliente(@PathVariable Long id, @RequestBody @Valid DataDto dataDto, HttpServletRequest request) throws JsonProcessingException {
         
     	if (!repository.existsById(id)) {
     		throw new UsuarioNaoEncontradoException(id);
     	}
+    	
+        if (dataDto.getCorrentista() != null) {
+        	throw new CorrentistaNaoPodeSerEnviadoException();
+        }
         
-        data.setId(id);
-        Data salvarData = repository.save(data);
-            
-        return ResponseEntity.ok(salvarData);
+        if (dataDto.getScore_credito() != null) {
+        	throw new ScoreCreditoNaoPodeSerEnviadoException();
+        }
+        
+        Data data = repository.findById(id).orElseThrow(() -> new UsuarioNaoEncontradoException(id));
+
+        if (dataDto.getNome() != null) {
+            data.setNome(dataDto.getNome());
+        }
+        
+        if (dataDto.getTelefone() != null) {
+            data.setTelefone(dataDto.getTelefone());
+        }
+        
+        if (dataDto.getSaldo_cc() != null) {
+            data.setSaldo_cc(dataDto.getSaldo_cc());
+
+            if (dataDto.getSaldo_cc() > 0.0) {
+                data.setCorrentista(true);
+            } else {
+                data.setCorrentista(false);
+            }
+        }
+        
+        Data updatedData = repository.save(data);
+
+        return ResponseEntity.ok(updatedData);
     }
 
 	

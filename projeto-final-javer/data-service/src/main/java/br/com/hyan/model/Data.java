@@ -1,7 +1,5 @@
 package br.com.hyan.model;
 
-import java.util.Objects;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 public class Data {
@@ -23,19 +22,21 @@ public class Data {
 	private String nome;
 	
 	@NotNull(message = "O telefone não pode ser nulo")
-	@Pattern(regexp = "^[0-9]{11}$", message = "O telefone deve conter apenas números e ter 11 dígitos")
-	@Column(nullable = false)
+	@Pattern(regexp = "^(?:\\(?[1-9]{2}\\)?)?\\s?[1-9]{1}[0-9]{3,4}\\-?[0-9]{4}$", message = "O telefone ou celular é obrigatório e deve estar no padrão nacional, sendo opcional o uso do DDD.")
+    @Column(nullable = false)
 	private String telefone;
 	
-	@NotNull(message = "O estado de correntista não pode ser nulo")
+	@PositiveOrZero
 	@Column(nullable = false, length = 80)
-	private Boolean correntista;
+	private Float saldo_cc = 0.0f;
 	
+	@PositiveOrZero
 	@Column(nullable = true, length = 80)
-	private Double score_credito = 0.0;
+	private Float score_credito = 0.0f;
 	
-	@Column(nullable = false, length = 80)
-	private Double saldo_cc = 0.0;
+	@Column(nullable = false)
+	private Boolean correntista = false;
+	
 	
 	
 	//CONSTRUTORES
@@ -44,13 +45,13 @@ public class Data {
 	}
 
 	
-	public Data(Long id, String nome, String telefone, Boolean correntista, Double saldo_cc, Double score_credito) {
+	public Data(Long id, String nome, String telefone, Boolean correntista, Float saldo_cc, Float score_credito) {
 		this.id = id;
 		this.nome = nome;
 		this.telefone = telefone;
 		this.correntista = correntista;
-		this.saldo_cc = (saldo_cc != null) ? saldo_cc : 0.0;
-		this.score_credito = (saldo_cc != null && saldo_cc != 0.0) ? saldo_cc * 0.1 : 0.0;;
+		this.saldo_cc = (saldo_cc != null) ? saldo_cc : 0.0f;
+		this.score_credito = (saldo_cc != null && saldo_cc != 0.0f) ? saldo_cc * 0.1f : 0.0f;;
 	}
 
 
@@ -88,45 +89,20 @@ public class Data {
 		this.correntista = correntista;
 	}
 
-	public Double getScore_credito() {
+	public Float getScore_credito() {
 		return score_credito;
 	}
 
-	public void setScore_credito(Double score_credito) {
+	public void setScore_credito(Float score_credito) {
 		this.score_credito = score_credito;
 	}
 
-	public Double getSaldo_cc() {
+	public Float getSaldo_cc() {
 		return saldo_cc;
 	}
 
-	public void setSaldo_cc(Double saldo_cc) {
-		this.saldo_cc = (saldo_cc != null) ? saldo_cc : 0.0;
-		this.score_credito = (saldo_cc != null && saldo_cc != 0.0) ? saldo_cc * 0.1 : 0.0;;
+	public void setSaldo_cc(Float saldo_cc) {
+		this.saldo_cc = (saldo_cc != null && saldo_cc > 0.0f) ? saldo_cc : 0.0f;
+		this.score_credito = (saldo_cc != null && saldo_cc != 0.0f) ? saldo_cc * 0.1f : 0.0f;;
 	}
-	
-	
-	//HASHCODE AND EQUALS
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(correntista, id, nome, saldo_cc, score_credito, telefone);
-	}
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Data other = (Data) obj;
-		return Objects.equals(correntista, other.correntista) && Objects.equals(id, other.id)
-				&& Objects.equals(nome, other.nome) && Objects.equals(saldo_cc, other.saldo_cc)
-				&& Objects.equals(score_credito, other.score_credito) && Objects.equals(telefone, other.telefone);
-	}
-	
-
 }
